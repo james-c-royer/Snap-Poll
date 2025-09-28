@@ -1,0 +1,121 @@
+* {
+  font-family: Canva Sans;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+.container {
+  height: 80%;
+}
+
+.navbar.navbar-expand-lg.bg-primary {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+#back-link {
+  position: absolute;
+  left: 1em;
+}
+
+#back-btn {
+  justify-content: left;
+  margin-left: 1em;
+  background-color: #ffffff;
+}
+
+#back-btn:hover {
+  background-color: gray;
+}
+
+#pg-title {
+  color: #111;
+}
+
+
+.card {
+  margin-top: 2em;
+  padding: 0px;
+}
+
+.card-header {
+  font-size: 30px;
+}
+
+#init-list {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 24px;
+}
+
+#player-count {
+  width: 15%;
+  min-width: 80px;
+  text-align: center;
+}
+
+#prompt-count {
+  width: 15%;
+  min-width: 80px;
+  text-align: center;
+}
+
+#subBtn.btn.btn-primary {
+  width: 30%;
+  min-width: 120px;
+  font-size: 24px;
+  margin-left: 32.5%;
+  justify-content: center;
+}
+
+.player-count:hover {
+  background-color: #ffc107;
+}
+
+.prompt-count:hover {
+  background-color: #0d6efd;
+}
+
+.prompt-input {
+  width: 100%;
+  font-size: medium;
+}
+
+.prompt-input:hover {
+  font-size: 30px;
+}
+
+#subBtn.btn.btn-primary {
+  width: 30%;
+  min-width: 120px;
+  font-size: 24px;
+  margin-left: 32.5%;
+  justify-content: center;
+}
+
+#main-row {
+  height: 100%;
+}
+
+.col-6 {
+  height: 100%;
+}
+
+.col-5 {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  margin-top: 2em;
+}
+
+.class-img {
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+}

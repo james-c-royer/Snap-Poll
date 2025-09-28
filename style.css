@@ -43,10 +43,12 @@ body {
 
 #create-btn {
   margin-bottom: 1em;
+  width: 100%;
 }
 
 #join-btn {
   margin-bottom: 1em;
+  width: 100%;
 }
 
 #join-code {
