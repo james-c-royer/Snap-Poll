@@ -38,10 +38,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const btn = document.createElement("button");
         btn.type = "submit";
-        btn.id = "subBtn"
+        btn.id = "finalizeBtn"
         btn.classList.add("btn", "btn-warning");
         btn.textContent = "Finalize prompt"
-
+        btn.addEventListener("click", function () {
+          const targetURL = "lobby/index.html";
+          window.location.href = targetURL;
+        });
         li.appendChild(btn);
         listGroup.appendChild(li);
       }
