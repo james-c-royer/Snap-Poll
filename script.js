@@ -15,7 +15,14 @@ document.addEventListener("DOMContentLoaded", () => {
     input.pattern = "\d*"; // this tells it to only validate digits
     input.placeholder = "Enter your 4-digit code";
 
+    const input_user = document.createElement("input");
+    input_user.type = "text";
+    input_user.placeholder = "Enter your username";
+    input_user.id = "username-input";
+
     buttonsDiv.appendChild(input);
+    buttonsDiv.appendChild(input_user);
+
     joinbtn.disabled = true;
   }
 });
