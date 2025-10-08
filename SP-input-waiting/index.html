@@ -11,22 +11,11 @@
     </head>
 
     <body>
-        <!--Username input from user-->
-        <div class="container">
-            <form id = username-submission>
-                <label>Enter your username:</label>
-                <input type= "text" id= "username-input" name= "username" required>
-                <button type="submit">Submit</button>
-            </form>
-        </div>
-
         <!--Waiting room after username submission-->
         <div class="container">
-            <div id="waiting-room" style="display:none;">
+            <div id="waiting-room">
                 <h2>Waiting Room</h2>
-                <p>Waiting for other players to join...</p>
-                <span id="display-username"></span> <br>
-                <span class="loader"></span>
+                <p>Waiting for host to start the Lobby...</p>
             </div>
         </div>
 
