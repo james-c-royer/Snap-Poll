@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+        <title>Join Lobby</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+        <link rel="stylesheet" href="style.css">
+    </head>
+
+    <body>
+        <!--Username input from user-->
+        <div class="container">
+            <form id = username-submission>
+                <label>Enter your username:</label>
+                <input type= "text" id= "username-input" name= "username" required>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+
+        <!--Waiting room after username submission-->
+        <div class="container">
+            <div id="waiting-room" style="display:none;">
+                <h2>Waiting Room</h2>
+                <p>Waiting for other players to join...</p>
+                <span id="display-username"></span> <br>
+                <span class="loader"></span>
+            </div>
+        </div>
+
+        <script src="script.js"></script>
+    </body>
+</html>
