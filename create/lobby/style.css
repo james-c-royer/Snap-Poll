@@ -8,8 +8,15 @@ body {
   min-height: 100%;
   overflow-y: auto;
   overflow-x: auto;
-
+  background-color: #e7e7e7;
 }
+
+.row {
+  /* centers by over riding bootstrap */
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
 
 .container {
   width: 100%;
@@ -41,12 +48,13 @@ body {
 #header-row.row {
   display: flex;
   flex-direction: row;
+  justify-content: center;
   width: 100%;
   min-height: 7.5%;
   height: auto;
   border: solid black 2px;
   text-align: center;
-  background-color: #f8f8f8;
+  background-color: white;
 }
 
 #header-text {
@@ -87,6 +95,7 @@ body {
   border-left: solid black 2px;
   border-right: solid black 2px;
   border-bottom: solid black 2px;
+  background-color: white;
 }
 
 #code-row-text {
@@ -112,6 +121,7 @@ body {
   border-left: solid black 2px;
   border-right: solid black 2px;
   border-bottom: solid black 2px;
+  background-color: white;
 }
 
 .players {
@@ -138,6 +148,7 @@ body {
   border-left: solid black 2px;
   border-right: solid black 2px;
   border-bottom: solid black 2px;
+  background-color: white;
 }
 
 .btn.btn-primary {
