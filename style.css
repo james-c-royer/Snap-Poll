@@ -74,3 +74,10 @@ body {
 #username-input:hover {
   font-weight: bold;
 }
+
+#subBtn {
+  margin-top: 1em;
+  text-align: center;
+  height: 3em;
+  font-size: 24px;
+}

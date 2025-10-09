@@ -19,10 +19,25 @@ document.addEventListener("DOMContentLoaded", () => {
     input_user.type = "text";
     input_user.placeholder = "Enter your username";
     input_user.id = "username-input";
+    input_user.maxLength = "10";
+    input_user.pattern = "[A-Za-z]+";
+
+    const submit = document.createElement("button")
+    submit.id = "subBtn";
+    submit.textContent = "Submit code and username"
+    submit.className = "btn btn-primary btn-lg"
 
     buttonsDiv.appendChild(input);
     buttonsDiv.appendChild(input_user);
+    buttonsDiv.appendChild(submit);
+
 
     joinbtn.disabled = true;
+
+    subBtn.addEventListener("click", () => {
+      const nextPage = "/player-waiting-room/index.html";
+
+      window.location.href = nextPage;
+    })
   }
 });
