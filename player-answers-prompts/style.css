@@ -1,0 +1,26 @@
+body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #027df0;
+      margin: 0;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      color: #f3f0f0;
+    }
+
+    #prompt {
+      background-color: #fff;
+      padding: 20px;
+      width: 80%;
+      max-width: 800px;
+      text-align: center;
+      font-size: 1.3em;
+      border-left: 5px solid #0044ff;
+      border-radius: 4px;
+      margin-bottom: 30px;
+    }
