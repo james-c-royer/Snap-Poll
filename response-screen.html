@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Player Responses</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #027df0;
+      margin: 0;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      color: #f3f0f0;
+    }
+
+    #prompt {
+      background-color: #fff;
+      padding: 20px;
+      width: 80%;
+      max-width: 800px;
+      text-align: center;
+      font-size: 1.3em;
+      border-radius: 4px;
+      margin-bottom: 30px;
+    }
+
+    #responses {
+      width: 80%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .response-card {
+      background-color: #ffffff;
+      padding: 15px 20px;
+      border-radius: 8px;
+      border-left: 10px solid #000000;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .player-name {
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #444;
+    }
+
+    .response-text {
+      font-size: 1em;
+      color: #333;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Player Responses</h1>
+
+  <div id="prompt">Prompt Goes Here!</div>
+
+  <div id="responses">
+  </div>
+
+  <script>
+    const playerResponses = [
+      { name: "Player 1", response: "Response 1" },
+      { name: "Player 2", response: "Response 2" },
+      { name: "Player 3", response: "Response 3" },
+    ];
+
+    const responsesContainer = document.getElementById('responses');
+
+    playerResponses.forEach(player => {
+      const card = document.createElement('div');
+      card.className = 'response-card';
+
+      const nameEl = document.createElement('div');
+      nameEl.className = 'player-name';
+      nameEl.textContent = player.name;
+
+      const responseEl = document.createElement('div');
+      responseEl.className = 'response-text';
+      responseEl.textContent = player.response;
+
+      card.appendChild(nameEl);
+      card.appendChild(responseEl);
+      responsesContainer.appendChild(card);
+    });
+  </script>
+
+</body>
+
+</html>

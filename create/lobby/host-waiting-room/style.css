@@ -1,25 +1,54 @@
 .container {
-  display: flex;
-  justify-content: center;
+    display: flex;
+    justify-content: center;
 }
 
 .loader {
     width: 48px;
     height: 48px;
     border: 5px solid #027df0;
-    border-bottom-color: rgb(255,202,44);
+    border-bottom-color: rgb(255, 202, 44);
     border-radius: 50%;
     display: inline-block;
     box-sizing: border-box;
     animation: rotation 1s linear infinite;
     justify-content: center;
-    }
+}
 
-    @keyframes rotation {
+@keyframes rotation {
     0% {
         transform: rotate(0deg);
     }
+
     100% {
         transform: rotate(360deg);
     }
-    } 
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+}
+
+body,
+html {
+    margin: 10;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #0d6efd;
+    height: 100%;
+}
+
+.container {
+    align-items: center;
+    height: 100vh;
+}
+
+#waiting-room {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    text-align: center;
+}
