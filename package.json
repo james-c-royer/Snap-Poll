@@ -1,0 +1,27 @@
+{
+  "name": "snap-poll",
+  "version": "1.0.0",
+  "description": "polling application for classrooms",
+  "homepage": "https://github.com/james-c-royer/Snap-Poll#readme",
+  "bugs": {
+    "url": "https://github.com/james-c-royer/Snap-Poll/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/james-c-royer/Snap-Poll.git"
+  },
+  "license": "ISC",
+  "author": "James Royer, Amreca Abdallah, Talon Quertermous",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.8",
+    "express": "^5.1.0",
+    "express.js": "^1.0.0",
+    "nextjs": "^0.0.3"
+  }
+}

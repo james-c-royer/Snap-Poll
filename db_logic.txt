@@ -1,0 +1,15 @@
+The following logic dicates what happens between the databases
+
+Every lobby will have following entities:
+Host: the player who created the lobby
+Player: the people responding to prompts in the lobby
+Session: the existing session which the players/hosts exist in
+Prompt: the prompts that players respond to
+
+Therefore, we need a session table containing:
+
+SessionID (int) <- this is the unique ID generated when a session is created
+
+We also need a Players table:
+playerID(int) <- dynamically generated int for each player
+playerName(varChar) <- 
