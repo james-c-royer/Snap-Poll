@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Host Screen - Waiting for Responses</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background-color: #027df0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    h1 {
+      color: #ffffff;
+      margin-bottom: 20px;
+      font-size: 2em;
+    }
+
+    #prompt-box {
+      background: #ffffff;
+      color: #333;
+      border: 2px solid #005bb5;
+      padding: 20px;
+      width: 100%;
+      max-width: 700px;
+      font-size: 1.5em;
+      margin-bottom: 30px;
+      text-align: center;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    #waiting {
+      font-style: italic;
+      color: #f0f0f0;
+      margin-bottom: 25px;
+      font-size: 1.1em;
+      animation: blink 1.5s infinite;
+    }
+
+    @keyframes blink {
+      0% { opacity: 1; }
+      50% { opacity: 0.4; }
+      100% { opacity: 1; }
+    }
+
+    #responses {
+      width: 100%;
+      max-width: 700px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    #responses li {
+      background: #ffffff;
+      padding: 12px 18px;
+      border: 1px solid #ccc;
+      margin-bottom: 12px;
+      border-radius: 6px;
+      font-size: 1em;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    @media (max-width: 600px) {
+      #prompt-box, #responses {
+        width: 90%;
+        font-size: 1.2em;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Discussion Prompt</h1>
+  <div id="prompt-box">Prompt Goes Here!</div>
+
+  <div id="waiting">Waiting for players to respond...</div>
+
+  <ul id="responses"></ul>
+
+  <script>
+
+    const mockResponses = [
+      "All Responses Received"
+    ];
+
+    const responsesEl = document.getElementById('responses');
+    let i = 0;
+
+    function addMockResponse() {
+      if (i < mockResponses.length) {
+        const li = document.createElement('li');
+        li.textContent = mockResponses[i];
+        responsesEl.appendChild(li);
+        i++;
+        setTimeout(addMockResponse, 2000); 
+      } else {
+        document.getElementById('waiting').textContent = 'All responses received.';
+      }
+    }
+
+    setTimeout(addMockResponse, 2000);
+  </script>
+
+</body>
+</html>
