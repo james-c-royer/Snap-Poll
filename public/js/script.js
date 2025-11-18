@@ -15,20 +15,12 @@ document.addEventListener("DOMContentLoaded", () => {
     input.pattern = "\d*"; // this tells it to only validate digits
     input.placeholder = "Enter your 4-digit code";
 
-    const input_user = document.createElement("input");
-    input_user.type = "text";
-    input_user.placeholder = "Enter your username";
-    input_user.id = "username-input";
-    input_user.maxLength = "10";
-    input_user.pattern = "[A-Za-z]+";
-
     const submit = document.createElement("button")
     submit.id = "subBtn";
     submit.textContent = "Submit code and username"
     submit.className = "btn btn-primary btn-lg"
 
     buttonsDiv.appendChild(input);
-    buttonsDiv.appendChild(input_user);
     buttonsDiv.appendChild(submit);
 
 

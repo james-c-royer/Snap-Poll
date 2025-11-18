@@ -1,4 +1,4 @@
-The following logic dicates what happens between the databases
+The following logic dictates what happens between the databases
 
 Every lobby will have following entities:
 Host: the player who created the lobby
@@ -6,10 +6,60 @@ Player: the people responding to prompts in the lobby
 Session: the existing session which the players/hosts exist in
 Prompt: the prompts that players respond to
 
-Therefore, we need a session table containing:
 
-SessionID (int) <- this is the unique ID generated when a session is created
+(Entity)
+Session table:
+------------------------------------------------------------------------
+session_id (int, primary) <- this is the unique id generated when a session is created
+player_limit(int) <- the maximum number of players that can join
+join_code(int, unique) <- a random 4 digit int that allows players to join the session
+------------------------------------------------------------------------
 
-We also need a Players table:
-playerID(int) <- dynamically generated int for each player
-playerName(varChar) <- 
+
+(Entity)
+Player table:
+------------------------------------------------------------------------
+player_id(int) <- dynamically generated int for each player UNIQUE
+player_index(int) <- 1-9 in order of who joined the session
+session_id(int) references Session <- the session itself
+
+unique key = (player_index + session_id) each index can only appear once in each session
+------------------------------------------------------------------------
+
+(Entity)
+Host table:
+------------------------------------------------------------------------
+host_id(int, primary) references Player <- a host must be an existing player 
+session_id(int, unique) references Session <- the session itself
+------------------------------------------------------------------------
+
+(Entity)
+Prompt table:
+------------------------------------------------------------------------
+prompt_id(int) <- the prompt ID
+prompt_index(int) <- the individual prompt index (identifies if it is prompt 1-9)
+prompt_content(VARCHAR(500)) <- the content of the prompt itself
+session_id(int) references session <- the session that the prompt belongs to
+
+Unique key (prompt_id + prompt_index)
+------------------------------------------------------------------------
+
+(Entity)
+Response table:
+------------------------------------------------------------------------
+player_id(int) references Player <- identifies which player made the response
+response_id(int, primary) <- the unique response identifier
+response_content(VARCHAR(500)) <- the content of the prompt itself
+prompt_id(int) references Prompt <- the individual prompt index that this response responds to
+
+// sess
+session_id(int) references Session <- the session that the prompt belongs to
+
+Unique key (player_id + prompt_id) <- a player cannot respond to the same prompt twice
+------------------------------------------------------------------------
+
+
+
+
+
+
