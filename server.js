@@ -1,7 +1,7 @@
 const express = require("express");
 const Pool = require('pg').Pool
 const bodyParser = require("body-parser");
-
+const port = process.env.PORT || 3000;
 const app = express();
 
 app.use(express.static('public'))
@@ -9,36 +9,29 @@ app.use(bodyParser.json());
 
 // Complete the code to add the database connection
 const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'postgres',
-    password: 'R3minds-meOfMy',
+    user: process.env.DB_user,
+    host: process.env.DB_host,
+    database: process.env.DB_type,
+    password: process.env.DB_password,
     port: 5432
 })
 
-app.get("/api/testimonials", (req, res) => {
+/* default powershell for unconfigured DB:
+TO SET
+$env:DB_user='postgres';
+$env:DB_host='postgres';
+$env:DB_database='postgres';
+$env:DB_password='postgres';
 
-    // Complete the code to retrieve the data and send to front end
-    const sql = "SELECT * FROM testimonials";
-    // results is an object that contains rows, rowCount, fileds (metadata about columns) and command (SELECT/INSERT/etc)
-    pool.query(sql, (error, results) => {
-        if (error) throw error;
-        // send the rows as json package
-        res.status(200).json(results.rows)
-    })
+TO VIEW
+$env:DB_(user/host/database/password)
+*/
+
+
+app.get("/api/testimonials", (req, res) => {
 });
 
 app.post("/api/testimonials", (req, res) => {
-
-    const testimonial = req.body;
-
-    // Complete the code to save the data into the database
-    const sql = "INSERT INTO testimonials (author, message) VALUES ($1, $2)";
-    const data = [testimonial.author, testimonial.message];
-    pool.query(sql, data, (error, results) => {
-        if (error) throw error;
-        res.status(200).json(results.rows);
-    })
 });
 
 app.listen(80, () => {
