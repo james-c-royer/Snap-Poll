@@ -1,54 +1,79 @@
-.container {
+body {
+    font-family: 'Inter', Arial, sans-serif;
+    background-color: #027df0;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    margin: 0;
+    min-height: 100vh;
 }
 
-.loader {
-    width: 48px;
-    height: 48px;
-    border: 5px solid #027df0;
-    border-bottom-color: rgb(255, 202, 44);
-    border-radius: 50%;
-    display: inline-block;
-    box-sizing: border-box;
-    animation: rotation 1s linear infinite;
-    justify-content: center;
+h1 {
+    color: #ffffff;
+    margin-bottom: 20px;
+    font-size: 2em;
 }
 
-@keyframes rotation {
+#prompt-box {
+    background: #ffffff;
+    color: #333;
+    border: 2px solid #005bb5;
+    padding: 20px;
+    width: 100%;
+    max-width: 700px;
+    font-size: 1.5em;
+    margin-bottom: 30px;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+#waiting {
+    font-style: italic;
+    color: #f0f0f0;
+    margin-bottom: 25px;
+    font-size: 1.1em;
+    animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
     0% {
-        transform: rotate(0deg);
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
     }
 
     100% {
-        transform: rotate(360deg);
+        opacity: 1;
     }
 }
 
-.container {
-    display: flex;
-    justify-content: center;
-}
-
-body,
-html {
-    margin: 10;
+#responses {
+    width: 100%;
+    max-width: 700px;
+    list-style: none;
     padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #0d6efd;
-    height: 100%;
+    margin: 0;
 }
 
-.container {
-    align-items: center;
-    height: 100vh;
+#responses li {
+    background: #ffffff;
+    padding: 12px 18px;
+    border: 1px solid #ccc;
+    margin-bottom: 12px;
+    border-radius: 6px;
+    font-size: 1em;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-#waiting-room {
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    text-align: center;
+@media (max-width: 600px) {
+
+    #prompt-box,
+    #responses {
+        width: 90%;
+        font-size: 1.2em;
+    }
 }
