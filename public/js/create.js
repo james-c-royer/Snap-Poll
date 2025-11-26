@@ -4,21 +4,37 @@ document.addEventListener("DOMContentLoaded", () => {
   const promptCount = document.getElementById("prompt-count");
   const listGroup = document.querySelector(".list-group.list-group-flush")
 
+  // function to be called to validate the number of prompts and
+  function validateInputs() {
+    const numPrompts = parseInt(promptCount.value, 10);
+    const numPlayers = parseInt(playerCount.value, 10);
+
+    return (
+      // we want 
+      !isNaN(numPrompts) && numPrompts >= 1 && numPrompts <= 9 &&
+      !isNaN(numPlayers) && numPlayers >= 1 && numPlayers <= 9
+    );
+  }
+
   submitBtn.addEventListener("click", createPrompts);
 
+
   function createPrompts() {
+
+    // validate the inputs first
+    if (!validateInputs()) {
+      alert("Player count must be between 2-8 and prompt count must be 1-9.");
+      return;
+    } else {
+      // Disable the first button so users can't re-trigger
+    submitBtn.disabled = true;
+  }
+
+
     // get the total number of prompts that need to be created
     let num = parseInt(promptCount.value, 10);
-
-    // validate that int is within the acceptable range. Should probably also check for NaN issues eventually 
-    if (num > 9 || num < 1 || isNaN(num)) {
-      alert("Please enter a number 1-9 for your prompt count")
-      return;
-    }
-    else {
-      submitBtn.disabled = true
-    }
-
+    
+    // Create inputs for prompts
     for (let i = 1; i <= num; i++) {
       let li = document.createElement("li");
       li.classList.add("list-group-item");
@@ -50,4 +66,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   }
+
+  
 });
