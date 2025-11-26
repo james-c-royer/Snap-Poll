@@ -42,12 +42,17 @@ document.addEventListener("DOMContentLoaded", () => {
       const promptInput = document.createElement("input");
       promptInput.type = "text";
       promptInput.maxLength = 100;
+
       promptInput.classList.add("prompt-input");
+      
+      // We will be sending the prompts to the DB so they need unique IDs
+      promptInput.id = `prompt-${i}`
       promptInput.placeholder = `Prompt ${i}`;
 
       li.appendChild(promptInput);
       listGroup.appendChild(li);
 
+      // create start button if we're at the final element
       if (i === num) {
         li = document.createElement("li");
         li.classList.add("list-group-item");
@@ -57,15 +62,15 @@ document.addEventListener("DOMContentLoaded", () => {
         btn.id = "finalizeBtn"
         btn.classList.add("btn", "btn-warning");
         btn.textContent = "Finalize prompt"
-        btn.addEventListener("click", function () {
-          const targetURL = "lobby/index.html";
-          window.location.href = targetURL;
-        });
+        btn.addEventListener("click", createSession);
         li.appendChild(btn);
         listGroup.appendChild(li);
       }
     }
   }
+  async function createSession() {
+    const num
+  }
 
-  
+
 });
