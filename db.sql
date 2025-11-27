@@ -1,35 +1,35 @@
-CREATE TABLE session (
-    session_id    SERIAL PRIMARY KEY,
-    player_limit  INT NOT NULL,
-    join_code     INT UNIQUE NOT NULL
+CREATE TABLE sessions (
+    session_id SERIAL PRIMARY KEY,
+    join_code INT UNIQUE NOT NULL,
+    player_limit INT NOT NULL,
+    state VARCHAR(20) DEFAULT 'waiting',   -- waiting, responding, results
+    current_prompt VARCHAR(500),                   -- holds the active prompt text
+    current_prompt_index INT DEFAULT 0     -- for multi-round progression
 );
 
-CREATE TABLE player (
+
+CREATE TABLE players (
     player_id SERIAL PRIMARY KEY,
-    player_index INT NOT NULL CHECK (player_index BETWEEN 1 AND 9),
-    session_id INT NOT NULL REFERENCES session(session_id) ON DELETE CASCADE,
-    UNIQUE (player_index, session_id)
+    session_id INT REFERENCES sessions(session_id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    is_host BOOLEAN DEFAULT false,                  -- TRUE for the host player
+    response VARCHAR(2500)                          -- stores the player’s answer
 );
 
-CREATE TABLE host (
-    host_id INT PRIMARY KEY REFERENCES player(player_id) ON DELETE CASCADE,
-    session_id INT UNIQUE NOT NULL REFERENCES session(session_id) ON DELETE CASCADE
-);
-
-CREATE TABLE prompt (
+CREATE TABLE prompts (
     prompt_id SERIAL PRIMARY KEY,
-    prompt_index INT NOT NULL CHECK (prompt_index BETWEEN 1 AND 9),
-    prompt_content VARCHAR(500) NOT NULL,
-    session_id INT NOT NULL REFERENCES session(session_id) ON DELETE CASCADE,
-    UNIQUE (prompt_id, prompt_index)
+    session_id INT REFERENCES sessions(session_id) ON DELETE CASCADE,
+    prompt_text VARCHAR(2500) NOT NULL,
+    prompt_index INT NOT NULL
 );
 
-CREATE TABLE response (
-    response_id SERIAL PRIMARY KEY,
-    player_id INT NOT NULL REFERENCES player(player_id) ON DELETE CASCADE,
-    response_content VARCHAR(500),
-    prompt_id INT NOT NULL REFERENCES prompt(prompt_id) ON DELETE CASCADE,
-	-- note that session_id here is redundant, but I am explicitly keeping it for ease of use
-    session_id INT NOT NULL REFERENCES session(session_id) ON DELETE CASCADE,
-    UNIQUE (player_id, prompt_id)
-);
+
+/* Drop table statements if needed:
+DROP TABLE prompts;
+DROP TABLE players;
+DROP TABLE sessions;
+*/
+
+/* Delete all rows from each table:
+TRUNCATE TABLE sessions, players, prompts CASCADE;
+*/

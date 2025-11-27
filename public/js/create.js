@@ -9,11 +9,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const numPrompts = parseInt(promptCount.value, 10);
     const numPlayers = parseInt(playerCount.value, 10);
 
-    return (
-      // we want 
-      !isNaN(numPrompts) && numPrompts >= 1 && numPrompts <= 9 &&
-      !isNaN(numPlayers) && numPlayers >= 1 && numPlayers <= 9
-    );
+    if (numPlayers > 8 || numPlayers < 2) {
+      return false;
+    } else if (numPrompts > 8 || numPrompts < 1) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   submitBtn.addEventListener("click", createPrompts);
@@ -27,13 +29,13 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     } else {
       // Disable the first button so users can't re-trigger
-    submitBtn.disabled = true;
-  }
+      submitBtn.disabled = true;
+    }
 
 
     // get the total number of prompts that need to be created
     let num = parseInt(promptCount.value, 10);
-    
+
     // Create inputs for prompts
     for (let i = 1; i <= num; i++) {
       let li = document.createElement("li");
@@ -44,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
       promptInput.maxLength = 100;
 
       promptInput.classList.add("prompt-input");
-      
+
       // We will be sending the prompts to the DB so they need unique IDs
       promptInput.id = `prompt-${i}`
       promptInput.placeholder = `Prompt ${i}`;
@@ -69,8 +71,66 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
   async function createSession() {
-    const num
+    // numbers that we will send to the backend
+    const numPrompts = parseInt(promptCount.value, 10);
+    const playerLimit = parseInt(playerCount.value, 10);
+
+    // error check that prompts were filled out
+    const promptInputs = document.querySelectorAll('input[id^="prompt-"]'); // select all input prompts
+    let prompts = [];
+
+    // store the prompts inside prompts array
+    promptInputs.forEach(input => {
+      prompts.push(input.value.trim()); // trim cuts off extra spaces on the end
+    })
+
+    // make sure the prompts aren't empty
+    for (i = 0; i < prompts.length; i++) {
+      if (prompts[i].length === 0) {
+        alert("Fill out all prompts before continuing.");
+        return;
+      }
+    }
+
+    try {
+
+      const res = await fetch("/api/sessions/create", {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          player_limit: playerLimit,
+          prompts: numPrompts
+        })
+      });
+
+      // failure message
+      if (!res.ok) {
+        alert("Unable to create session");
+        return;
+      }
+
+      const data = await res.json();
+      /* data is the what is generated in the app.post (from res.json) function. It will look something like:
+      {
+      session_id: x,
+      player_id: y,
+      join_code: xxxx
+      }
+      */
+
+      // debugging for myself
+      console.log(data);
+
+      // once we have that data, we can send the player to the their custom create lobby screen
+      window.location.href =
+        `/lobby_created.html?session_id=${data.session_id}&player_id=${data.player_id}`;
+
+    } catch (err) {
+      console.error(err);
+      alert("Error creating session");
+    }
   }
-
-
 });
