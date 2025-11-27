@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const submitBtn = document.getElementById("subBtn");
   const playerCount = document.getElementById("player-count");
-  const promptCount = document.getElementById("prompt-count");
+  const promptCount = document.getElementById("promptCount");
   const listGroup = document.querySelector(".list-group.list-group-flush")
 
   // function to be called to validate the number of prompts and
@@ -77,16 +77,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // error check that prompts were filled out
     const promptInputs = document.querySelectorAll('input[id^="prompt-"]'); // select all input prompts
-    let prompts = [];
+    let sesh_prompts = [];
 
     // store the prompts inside prompts array
     promptInputs.forEach(input => {
-      prompts.push(input.value.trim()); // trim cuts off extra spaces on the end
+      sesh_prompts.push(input.value.trim()); // trim cuts off extra spaces on the end
     })
 
     // make sure the prompts aren't empty
-    for (i = 0; i < prompts.length; i++) {
-      if (prompts[i].length === 0) {
+    for (i = 0; i < sesh_prompts.length; i++) {
+      if (sesh_prompts[i].length === 0) {
         alert("Fill out all prompts before continuing.");
         return;
       }
@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         body: JSON.stringify({
           player_limit: playerLimit,
-          prompts: numPrompts
+          prompts: sesh_prompts
         })
       });
 

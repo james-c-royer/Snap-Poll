@@ -7,7 +7,6 @@ const app = express();
 app.use(express.static('public'))
 app.use(bodyParser.json());
 
-// Complete the code to add the database connection
 const pool = new Pool({
     user: process.env.DB_user,
     host: process.env.DB_host,
@@ -85,11 +84,10 @@ app.post("/api/sessions/create", async (req, res) => {
     }
 
     // Create the host player
-
     // host is just a player with the host role
     const host = await pool.query(
         "INSERT INTO players (session_id, name, is_host) VALUES ($1, $2, true) RETURNING player_id",
-        [session_id, true]
+        [session_id, "Host"]
     );
 
     // send the response back to the front-end (this)
@@ -102,7 +100,7 @@ app.post("/api/sessions/create", async (req, res) => {
 
 
 /* used to get the join code for lobby_created. Some explanation:
-:sid is a route parameter. When you call this, you will call:
+:session_id is a route parameter. When you call this, you will call:
     1.  declare "const params = new URLSearchParams(window.location.search)"
             -- this is the query string for the lobby (such as ?session_id=1&player_id=1)
     2. declare "const lobby_sessionID = params.get("session_id")""
@@ -151,3 +149,114 @@ app.post(`/api/create_player`, async (req, res) => {
         player_id: result.rows[0].player_id
     });
 })
+
+// Then, in lobby_created, we need to populate the players:
+app.get(`/api/sessions/:session_id/players`, async (req, res) => {
+    const sql = "SELECT player_id, name FROM players WHERE session_id = $1 ORDER BY player_id";
+    const result = await pool.query(sql, [req.params.session_id])
+    res.json(result.rows);
+})
+
+
+// ----------------------------------------------------------------------------
+// --------------------------- STARTING A GAME --------------------------------
+// ----------------------------------------------------------------------------
+
+// 1. Set the text of the current prompt and move the state to "responding":
+app.post("/api/sessions/:session_id/set_current_prompt", async (req, res) => {
+    const session_id = req.params.session_id;
+
+    try {
+        // 1. Get current prompt index for the session
+        const indexSql = `
+            SELECT current_prompt_index
+            FROM sessions
+            WHERE session_id = $1
+        `;
+        const indexResult = await pool.query(indexSql, [session_id]);
+
+        if (indexResult.rows.length === 0) {
+            return res.status(404).json({ error: "Session not found" });
+        }
+
+        const currentIndex = indexResult.rows[0].current_prompt_index;
+
+        // 2. Retrieve prompt with matching index
+        const promptSql = `
+            SELECT prompt_text
+            FROM prompts
+            WHERE session_id = $1 AND prompt_index = $2
+        `;
+        const promptResult = await pool.query(promptSql, [session_id, currentIndex]);
+        const promptText = promptResult.rows[0].prompt_text;
+
+        // 3. Update session to store the new current prompt
+        const updateSql = `
+            UPDATE sessions
+            SET current_prompt = $1,
+                state = 'responding'
+            WHERE session_id = $2
+        `;
+        await pool.query(updateSql, [promptText, session_id]);
+
+        // 4. Return the prompt
+        res.json({
+            done: false,
+            prompt: promptText,
+            index: currentIndex
+        });
+
+    } catch (err) {
+        console.error("Error setting current prompt:", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+// 2. get the current state to move the players from waiting_room to player_responding
+app.get("/api/sessions/:session_id/state", async (req, res) => {
+    const sql = `
+        SELECT state
+        FROM sessions
+        WHERE session_id = $1`;
+    const result = await pool.query(sql, [req.params.session_id])
+    res.json(result.rows[0])
+})
+
+// ----------------------------------------------------------------------------
+// ---------------------- ADVANCING BETWEEN PROMPTS ---------------------------
+// ----------------------------------------------------------------------------
+
+// 1. Advance the current_prompt_index 
+app.post("/api/sessions/:session_id/advance_prompt", async (req, res) => {
+    const session_id = req.params.session_id;
+
+    // 1. advance the index
+    let updateSql = `
+        UPDATE sessions
+        SET current_prompt_index = current_prompt_index + 1
+        WHERE session_id = $1
+        RETURNING current_prompt_index
+    `;
+    const updated = await pool.query(updateSql, [session_id]);
+    const newIndex = updated.rows[0].current_prompt_index;
+
+    // 2. retrieve the new prompt
+    let promptSql = `
+        SELECT prompt_text 
+        FROM prompts
+        WHERE session_id = $1 AND prompt_index = $2
+    `;
+    const promptResult = await pool.query(promptSql, [session_id, newIndex]);
+
+    if (promptResult.rows.length === 0) {
+        // no more prompts!
+        return res.json({ done: true });
+    }
+
+    res.json({
+        done: false,
+        new_index: newIndex,
+        prompt: promptResult.rows[0].prompt_text
+    });
+});
+
