@@ -223,6 +223,66 @@ app.get("/api/sessions/:session_id/state", async (req, res) => {
 })
 
 // ----------------------------------------------------------------------------
+// ----------------------- WAITING ROOM FUNCTIONS -----------------------------
+// ----------------------------------------------------------------------------
+
+// 1. Retrieve the current prompt
+app.get("/api/sessions/:session_id/prompt_text", async (req, res) => {
+    const sql = `
+        SELECT current_prompt
+        FROM sessions
+        WHERE session_id = $1`;
+    const result = await pool.query(sql, [req.params.session_id])
+    res.json(result.rows[0])
+})
+
+//2. Poll to see if all responses have been received:
+app.get("/api/sessions/:session_id/count_responses", async (req, res) => {
+    try {
+        const sql = `
+            SELECT 
+                COUNT(*) FILTER (WHERE response IS NOT NULL AND is_host = false) AS answered,
+                COUNT(*) FILTER (WHERE is_host = false) AS total
+            FROM players
+            WHERE session_id = $1
+        `;
+        const result = await pool.query(sql, [req.params.session_id]);
+        const answeredNum = Number(result.rows[0].answered);
+        const totalNum = Number(result.rows[0].total);
+
+        console.log(`Answered: ${answeredNum}, Total: ${totalNum}`);
+
+        if (answeredNum === totalNum && totalNum > 0) {
+            await pool.query(
+                "UPDATE sessions SET state='results' WHERE session_id=$1",
+                [req.params.session_id]
+            );
+        }
+
+        res.json(result.rows[0]);
+
+    } catch (err) {
+        console.error("Error in /all_responses:", err);
+        res.status(500).json({ error: "internal error" });
+    }
+});
+
+// 3. POSTing replies from users:
+app.post("/api/sessions/:session_id/respond/:player_id", async (req, res) => {
+    const { response } = req.body;
+
+    const sql = `
+        UPDATE players
+        SET response=$1
+        WHERE player_id=$2 AND session_id=$3
+    `;
+    await pool.query(sql, [response, req.params.player_id, req.params.session_id]);
+
+    res.json({ ok: true });
+});
+
+
+// ----------------------------------------------------------------------------
 // ---------------------- ADVANCING BETWEEN PROMPTS ---------------------------
 // ----------------------------------------------------------------------------
 
