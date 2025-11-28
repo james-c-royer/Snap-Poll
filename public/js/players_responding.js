@@ -30,22 +30,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 promptBox.textContent = data.current_prompt;
             }
 
-            // If player has submitted and state changed to 'results', redirect to response screen
-            if (hasSubmitted && data.state === 'results') {
-                window.location.href =
-                    `/response_screen.html?session_id=${sessionId}&player_id=${playerId}`;
-            }
-
         } catch (err) {
             console.error("Error loading prompt", err);
         }
     }
-
-    // Load prompt immediately
-    loadPrompt();
-    // Poll every 3 sec so players see updated prompt if rounds progress
-    setInterval(loadPrompt, 3000);
-
 
     // Submitting a response: 
     submitButton.addEventListener("click", async (event) => {
@@ -91,5 +79,29 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("An error occurred while submitting your response.");
         }
     });
+    // poll to see if all responses have been received -- and if they have redirect them to response_screen
+    async function checkReponses() {
 
+        try {
+            // 1. Check the session state and move to reponse screen if all the responses are received
+            const stateRes = await fetch(`/api/sessions/${sessionId}/state`);
+            const stateData = await stateRes.json();
+
+            if (stateData.state === "results") {
+                // we need to include player ID in the query because only the host should be
+                // able to see the next screen page
+                window.location.href =
+                    `/response_screen.html?session_id=${sessionId}&player_id=${playerId}`;
+            }
+
+        } catch (err) {
+            console.error("Error checking responses:", err);
+        }
+    }
+
+    // Load prompt immediately
+    loadPrompt();
+    // Poll every 3 sec so players see updated prompt if rounds progress
+    setInterval(loadPrompt, 3000);
+    setInterval(checkReponses, 3000)
 });
