@@ -3,7 +3,7 @@ CREATE TABLE sessions (
     join_code INT UNIQUE NOT NULL,
     player_limit INT NOT NULL,
     state VARCHAR(20) DEFAULT 'waiting',   -- waiting, responding, results
-    current_prompt VARCHAR(500),                   -- holds the active prompt text
+    current_prompt VARCHAR(1000),           -- holds the active prompt text
     current_prompt_index INT DEFAULT 0     -- for multi-round progression
 );
 

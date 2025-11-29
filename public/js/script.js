@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const nameInput = document.createElement("input");
     // new element
     nameInput.type = "text";
-    nameInput.id = "player-name";
+    nameInput.id = "username-input";
     nameInput.placeholder = "Enter your name";
     nameInput.className = "form-control mb-2";
 
