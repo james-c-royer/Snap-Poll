@@ -101,7 +101,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Load prompt immediately
     loadPrompt();
-    // Poll every 3 sec so players see updated prompt if rounds progress
-    setInterval(loadPrompt, 3000);
-    setInterval(checkReponses, 3000)
+    // Poll every 2 sec so players see updated prompt if rounds progress
+    setInterval(checkReponses, 2000)
 });

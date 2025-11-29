@@ -119,9 +119,9 @@ app.get("/api/sessions/:session_id/join_code", async (req, res) => {
 });
 
 
-// ----------------------------------------------------------------------------
-// --------------------------- JOINING A LOBBY --------------------------------
-// ----------------------------------------------------------------------------
+// -----------------------------------------
+// ------------ JOINING A LOBBY ------------
+// -----------------------------------------
 
 // used in script.js: how do we join a lobby? First we see if a lobby exists:
 app.get("/api/sessions/:join_code", async (req, res) => {
@@ -158,9 +158,9 @@ app.get(`/api/sessions/:session_id/players`, async (req, res) => {
 })
 
 
-// ----------------------------------------------------------------------------
-// --------------------------- STARTING A GAME --------------------------------
-// ----------------------------------------------------------------------------
+// -----------------------------------------
+// ------------ STARTING A GAME ------------
+// -----------------------------------------
 
 // 1. Set the text of the current prompt and move the state to "responding":
 app.post("/api/sessions/:session_id/set_current_prompt", async (req, res) => {
@@ -208,6 +208,7 @@ app.post("/api/sessions/:session_id/set_current_prompt", async (req, res) => {
 
     } catch (err) {
         console.error("Error setting current prompt:", err);
+        // HTTP Code is the correct code for server-side error. Had to look it up lol
         res.status(500).json({ error: "Internal server error" });
     }
 });
@@ -222,9 +223,9 @@ app.get("/api/sessions/:session_id/state", async (req, res) => {
     res.json(result.rows[0])
 })
 
-// ----------------------------------------------------------------------------
-// ----------------------- WAITING ROOM FUNCTIONS -----------------------------
-// ----------------------------------------------------------------------------
+// -----------------------------------------
+// -------- WAITING ROOM FUNCTIONS ---------
+// -----------------------------------------
 
 // 1. Retrieve the current prompt
 app.get("/api/sessions/:session_id/prompt_text", async (req, res) => {
@@ -252,6 +253,7 @@ app.get("/api/sessions/:session_id/count_responses", async (req, res) => {
 
         console.log(`Answered: ${answeredNum}, Total: ${totalNum}`);
 
+        // We update state because it is the trigger to move to the response screen
         if (answeredNum === totalNum && totalNum > 0) {
             await pool.query(
                 "UPDATE sessions SET state='results' WHERE session_id=$1",
@@ -262,7 +264,7 @@ app.get("/api/sessions/:session_id/count_responses", async (req, res) => {
         res.json(result.rows[0]);
 
     } catch (err) {
-        console.error("Error in /all_responses:", err);
+        console.error("Error in /count_responses:", err);
         res.status(500).json({ error: "internal error" });
     }
 });
@@ -282,14 +284,88 @@ app.post("/api/sessions/:session_id/respond/:player_id", async (req, res) => {
 });
 
 
-// ----------------------------------------------------------------------------
-// ---------------------- ADVANCING BETWEEN PROMPTS ---------------------------
-// ----------------------------------------------------------------------------
+// -----------------------------------------
+// ------- RESPONSE SCREEN FUNCTIONS -------
+// -----------------------------------------
 
-// 1. Advance the current_prompt_index 
+// 1. Retreive all the responses:
+app.get("/api/sessions/:session_id/all_responses", async (req, res) => {
+    try {
+        const sql = `
+        SELECT name, response
+        FROM players
+        WHERE session_id = $1
+            AND is_host = false
+            AND response IS NOT NULL
+        ORDER BY player_id ASC`;
+        const results = await pool.query(sql, [req.params.session_id])
+
+        res.json(results.rows)
+    }
+    catch (err) {
+        console.error("Error loading responses:", err);
+        res.status(500).json({ error: "Failed to load responses" });
+    }
+})
+
+// 2. Check if a player is the host:
+app.get("/api/sessions/:player_id/check_host", async (req, res) => {
+    const sql = `
+        SELECT is_host
+        FROM players
+        WHERE player_id = $1`;
+
+    const results = await pool.query(sql, [req.params.player_id])
+    // if we get a hit:
+    if (results.rows.length > 0) {
+        res.json({ is_host: results.rows[0].is_host })
+    } else {
+        res.json({ is_host: false });
+    }
+})
+
+
+// 3. Get the total prompt count for the session and the current index
+app.get("/api/sessions/:sid/prompt_info", async (req, res) => {
+    const promptCountRes = await pool.query(
+        "SELECT COUNT(*) AS total FROM prompts WHERE session_id=$1",
+        [req.params.sid]
+    );
+
+    const sessionRes = await pool.query(
+        "SELECT current_prompt_index FROM sessions WHERE session_id=$1",
+        [req.params.sid]
+    );
+
+    res.json({
+        total: Number(promptCountRes.rows[0].total),
+        index: Number(sessionRes.rows[0].current_prompt_index)
+    });
+});
+
+// 3 Clear all the responses and set them to null:
+app.post("/api/sessions/:session_id/clear_responses", async (req, res) => {
+    try {
+        const sessionId = req.params.session_id;
+        const sql = `
+            UPDATE players
+            SET response = NULL
+            WHERE session_id = $1
+        `;
+
+        await pool.query(sql, [sessionId]);
+
+        res.json({ ok: true });
+    } catch (err) {
+        console.error("Error clearing responses:", err);
+        res.status(500).json({ ok: false, error: "Failed to clear responses" });
+    }
+});
+
+
+
+// 4. Advance the current_prompt_index 
 app.post("/api/sessions/:session_id/advance_prompt", async (req, res) => {
-    const session_id = req.params.session_id;
-
     // 1. advance the index
     let updateSql = `
         UPDATE sessions
@@ -297,26 +373,29 @@ app.post("/api/sessions/:session_id/advance_prompt", async (req, res) => {
         WHERE session_id = $1
         RETURNING current_prompt_index
     `;
-    const updated = await pool.query(updateSql, [session_id]);
+    const updated = await pool.query(updateSql, [req.params.session_id]);
     const newIndex = updated.rows[0].current_prompt_index;
 
-    // 2. retrieve the new prompt
-    let promptSql = `
-        SELECT prompt_text 
-        FROM prompts
-        WHERE session_id = $1 AND prompt_index = $2
-    `;
-    const promptResult = await pool.query(promptSql, [session_id, newIndex]);
-
-    if (promptResult.rows.length === 0) {
-        // no more prompts!
-        return res.json({ done: true });
-    }
-
     res.json({
-        done: false,
         new_index: newIndex,
-        prompt: promptResult.rows[0].prompt_text
     });
 });
 
+// 5. Modify the session state:
+app.post("/api/sessions/:session_id/modify_state", async (req, res) => {
+    try {
+        const state = req.body.state;
+
+        let sql = `
+        UPDATE sessions
+        SET state = $1
+        WHERE session_id = $2;
+    `;
+        const updated = await pool.query(sql, [state, req.params.session_id]);
+
+        res.json({ ok: true });
+    } catch (err) {
+        console.error("Error POSTing state:", err);
+        res.json({ ok: false });
+    }
+});
