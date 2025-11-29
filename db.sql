@@ -11,7 +11,7 @@ CREATE TABLE sessions (
 CREATE TABLE players (
     player_id SERIAL PRIMARY KEY,
     session_id INT REFERENCES sessions(session_id) ON DELETE CASCADE,
-    name TEXT NOT NULL,
+    name VARCHAR(10) NOT NULL,
     is_host BOOLEAN DEFAULT false,                  -- TRUE for the host player
     response VARCHAR(2500)                          -- stores the player’s answer
 );

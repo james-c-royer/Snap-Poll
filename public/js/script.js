@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     nameInput.id = "username-input";
     nameInput.placeholder = "Enter your name";
     nameInput.className = "form-control mb-2";
+    nameInput.maxLength = "10";
 
     // create a submission button
     const submit = document.createElement("button")
