@@ -9,6 +9,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let hasSubmitted = false;
 
+    responseInput.addEventListener('input', function () {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+    });
+
+
     if (!sessionId || !playerId) {
         console.error("Missing session_id or player_id in URL");
         return;

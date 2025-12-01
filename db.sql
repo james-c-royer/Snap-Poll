@@ -3,8 +3,9 @@ CREATE TABLE sessions (
     join_code INT UNIQUE NOT NULL,
     player_limit INT NOT NULL,
     state VARCHAR(20) DEFAULT 'waiting',   -- waiting, responding, results
-    current_prompt VARCHAR(1000),           -- holds the active prompt text
-    current_prompt_index INT DEFAULT 0     -- for multi-round progression
+    current_prompt VARCHAR(500),          -- holds the active prompt text
+    current_prompt_index INT DEFAULT 0,    -- for multi-round progression
+    game_started BOOLEAN DEFAULT false     -- checked to see if the game has already begun
 );
 
 
@@ -13,13 +14,13 @@ CREATE TABLE players (
     session_id INT REFERENCES sessions(session_id) ON DELETE CASCADE,
     name VARCHAR(10) NOT NULL,
     is_host BOOLEAN DEFAULT false,                  -- TRUE for the host player
-    response VARCHAR(2500)                          -- stores the player’s answer
+    response VARCHAR(500)                          -- stores the player’s answer
 );
 
 CREATE TABLE prompts (
     prompt_id SERIAL PRIMARY KEY,
     session_id INT REFERENCES sessions(session_id) ON DELETE CASCADE,
-    prompt_text VARCHAR(2500) NOT NULL,
+    prompt_text VARCHAR(500) NOT NULL,
     prompt_index INT NOT NULL
 );
 

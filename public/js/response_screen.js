@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const infoRes = await fetch(`/api/sessions/${sessionId}/prompt_info`);
         const info = await infoRes.json();
 
-        // 2. if we ARE on the next prompt, go to the end screen and change state to completed
+        // 2. if we are on the FINAL prompt, go to the end screen and change state to completed
         if (info.index >= info.total - 1) {
           const change_state = await fetch(`/api/sessions/${sessionId}/modify_state`, {
             method: "POST",
@@ -93,8 +93,12 @@ document.addEventListener("DOMContentLoaded", () => {
               state: "completed"
             })
           })
+          // clear the database of the session
+          const clear_all = await fetch(`/api/sessions/${sessionId}/clear_all`, {
+            method: "POST"
+          })
 
-          window.location.href = `/end_screen.html?session_id=${sessionId}&player_id=${playerId}`;
+          window.location.href = "/end_screen.html";
           return;
         }
 
@@ -142,8 +146,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Redirect player to response page
         window.location.href = `/player_responding.html?session_id=${sessionId}&player_id=${playerId}`;
-      } else if (data.state === "completed") {
-        window.location.href = `/end_screen.html?session_id=${sessionId}&player_id=${playerId}`;
+      } else if (data.state === "completed" || data.state === "deleted") {
+        window.location.href = "/end_screen.html";
       }
 
     } catch (err) {

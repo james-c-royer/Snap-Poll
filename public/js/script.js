@@ -67,11 +67,29 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    // Check if the game has already started
+    const gameStatusResponse = await fetch(`/api/sessions/${session.session_id}/game_started`);
+    const gameStatus = await gameStatusResponse.json();
+
+    if (gameStatus.game_started) {
+      alert("Cannot join lobby: game has already started");
+      return;
+    }
+
+    // Check if the lobby is full
+    const playerLimitResponse = await fetch(`/api/sessions/${session.session_id}/player_limit`);
+    const playerLimitData = await playerLimitResponse.json();
+
+    if (parseInt(playerLimitData.current_players) >= parseInt(playerLimitData.player_limit)) {
+      alert("Cannot join lobby: lobby is full");
+      return;
+    }
+
     // if it is we can create a new player
     else {
 
       try {
-        let name = document.getElementById("player-name").value.trim();
+        const name = document.getElementById("username-input").value.trim();
 
         const add_player = await fetch(`/api/create_player`, {
           method: "POST",

@@ -123,14 +123,14 @@ app.get("/api/sessions/:session_id/join_code", async (req, res) => {
 // ------------ JOINING A LOBBY ------------
 // -----------------------------------------
 
-// used in script.js: how do we join a lobby? First we see if a lobby exists:
+// 1. used in script.js: how do we join a lobby? First we see if a lobby exists:
 app.get("/api/sessions/:join_code", async (req, res) => {
     const sql = "SELECT session_id FROM sessions WHERE join_code =$1"
     const result = await pool.query(sql, [req.params.join_code]);
     res.json(result.rows[0] || null) // returns null if no lobby exists
 })
 
-// if it does exists, we need to create them:
+// 2. if it does exists, we need to create them:
 app.post(`/api/create_player`, async (req, res) => {
     const { join_code, name } = req.body;
 
@@ -150,7 +150,30 @@ app.post(`/api/create_player`, async (req, res) => {
     });
 })
 
-// Then, in lobby_created, we need to populate the players:
+// 3. Check that the game has not already started
+app.get("/api/sessions/:session_id/game_started", async (req, res) => {
+    const sql = `
+        SELECT game_started
+        FROM sessions
+        WHERE session_id = $1`;
+
+    const result = await pool.query(sql, [req.params.session_id]);
+    res.json(result.rows[0])
+})
+
+// 4. We also need to check, when joining, that the extra player will not make us exceed the lobby 
+app.get("/api/sessions/:session_id/player_limit", async (req, res) => {
+    const sql = `
+        SELECT 
+            player_limit,
+            (SELECT COUNT(*) FROM players WHERE session_id = $1) AS current_players
+        FROM sessions
+        WHERE session_id = $1`;
+    const results = await pool.query(sql, [req.params.session_id]);
+    res.json(results.rows[0]);
+});
+
+// 5. Then, in lobby_created, we need to populate the players:
 app.get(`/api/sessions/:session_id/players`, async (req, res) => {
     const sql = "SELECT player_id, name FROM players WHERE session_id = $1 ORDER BY player_id";
     const result = await pool.query(sql, [req.params.session_id])
@@ -215,13 +238,43 @@ app.post("/api/sessions/:session_id/set_current_prompt", async (req, res) => {
 
 // 2. get the current state to move the players from waiting_room to player_responding
 app.get("/api/sessions/:session_id/state", async (req, res) => {
-    const sql = `
-        SELECT state
-        FROM sessions
+    try {
+        const sql = `
+      SELECT state
+      FROM sessions
+      WHERE session_id = $1
+    `;
+        const result = await pool.query(sql, [req.params.session_id]);
+
+        // We need to error check for if a state is deleted. here, if nothing is found, 
+        // we can return a custom "deleted" state that isn't actually in the DB
+        if (result.rows.length === 0) {
+            return res.json({ state: "deleted" });
+        }
+
+        res.json({ state: result.rows[0].state });
+
+    } catch (err) {
+        console.error("Error loading state:", err);
+        res.json({ state: null });
+    }
+});
+
+
+// 3. Change game_started to false so that players can't join once already started
+app.post("/api/sessions/:session_id/start", async (req, res) => {
+    try {
+        const sql = `
+        UPDATE sessions
+        SET game_started = true
         WHERE session_id = $1`;
-    const result = await pool.query(sql, [req.params.session_id])
-    res.json(result.rows[0])
-})
+        const result = await pool.query(sql, [req.params.session_id]);  // ← Fixed
+        res.json({ ok: true });
+    } catch (err) {
+        console.error("Error changing start status:", err);
+        res.status(500).json({ ok: false, error: "Failed to change game start" });
+    }
+});
 
 // -----------------------------------------
 // -------- WAITING ROOM FUNCTIONS ---------
@@ -397,5 +450,38 @@ app.post("/api/sessions/:session_id/modify_state", async (req, res) => {
     } catch (err) {
         console.error("Error POSTing state:", err);
         res.json({ ok: false });
+    }
+});
+
+
+// -----------------------------------------
+// ------------ ENDING THE GAME ------------
+// -----------------------------------------
+
+// 1. Clear the data, for the given session, when the lobby is over:
+app.post("/api/sessions/:session_id/clear_all", async (req, res) => {
+    try {
+        // ON DELETE CASCADE will ennsure that the data gets removed from players and prompts as well
+        const sql = `
+      DELETE FROM sessions
+      WHERE session_id = $1
+      RETURNING session_id
+    `;
+
+        const result = await pool.query(sql, [req.params.session_id]);
+
+        // make sure session exists
+        if (result.rowCount === 0) {
+            return res.status(404).json({ ok: false, error: "Session not found" });
+        }
+
+        res.json({
+            ok: true,
+            deleted_session: result.rows[0].session_id
+        });
+
+    } catch (err) {
+        console.error("Error clearing session data:", err);
+        res.status(500).json({ ok: false, error: "Server error clearing data" });
     }
 });

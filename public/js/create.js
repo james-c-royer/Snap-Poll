@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     // get the total number of prompts that need to be created
-    let num = parseInt(promptCount.value, 10);
+    const num = parseInt(promptCount.value, 10);
 
     // Create inputs for prompts
     for (let i = 1; i <= num; i++) {

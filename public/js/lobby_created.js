@@ -42,11 +42,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function startGame() {
     // sets the current_prompt and changes the state to responding
-    const res = await fetch(`/api/sessions/${sessionId}/set_current_prompt`, {
+    let res = await fetch(`/api/sessions/${sessionId}/set_current_prompt`, {
       method: "POST"
     });
 
     const data = await res.json();
+
+    // update the game_started bool to stop more players from joining
+    res = await fetch(`/api/sessions/${sessionId}/start`, {
+      method: "POST"
+    })
 
 
     // host starts round 1 by retrieving the next prompt

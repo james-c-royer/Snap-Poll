@@ -1,26 +1,61 @@
 body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #027df0;
-      margin: 0;
-      padding: 30px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #027df0;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-    h1 {
-      margin-bottom: 10px;
-      color: #f3f0f0;
-    }
+h1 {
+  margin-top: 30px;
+  margin-bottom: 30px;
+  color: #f3f0f0;
+}
 
-    #prompt {
-      background-color: #fff;
-      padding: 20px;
-      width: 80%;
-      max-width: 800px;
-      text-align: center;
-      font-size: 1.3em;
-      border-left: 5px solid #0044ff;
-      border-radius: 4px;
-      margin-bottom: 30px;
-    }
+.container-fluid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 20px;
+}
+
+#prompt {
+  background-color: #fff;
+  padding: 20px;
+  width: 80%;
+  text-align: center;
+  font-size: 1.3em;
+  border-left: 5px solid #0044ff;
+  border-radius: 4px;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#response-section {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+#response-input {
+  width: 100%;
+  padding: 15px;
+  font-size: 1em;
+  border: 2px solid #0044ff;
+  border-radius: 4px;
+  font-family: inherit;
+}
+
+#submitButton {
+  width: 100%;
+  padding: 12px;
+  font-size: 1.1em;
+}
