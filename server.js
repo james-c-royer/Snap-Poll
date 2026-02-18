@@ -16,7 +16,7 @@ const pool = new Pool({
 })
 
 app.listen(80, () => {
-    console.log(`Listening on port ${port}`);
+    console.log(`Listening via port ${port}`);
 });
 
 /* default powershell for unconfigured DB:
